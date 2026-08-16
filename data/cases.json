@@ -31,6 +31,57 @@
       { "file": "email-header.png", "caption": "Cabeçalho do e-mail analisado pelo Message Header Analyzer." }
     ]
   },
+
+  {
+    "id": "phishing-002",
+    "case_number": "INC-2026-002",
+    "title": "Spear Phishing com Anexo Malicioso (Fatura Fornecedor Tech)",
+    "category": "phishing",
+    "severity": "critical",
+    "status": "resolved",
+    "date": "2026-04-02",
+    "duration": "5h 10min",
+    "tools": ["Gophish", "SIEM (Splunk)", "VirusTotal", "EDR", "Active Directory", "EntraID", "Firewall corporativo"],
+    "mitre": ["T1566.001 - Spearphishing Attachment", "T1027 - Obfuscated Files or Information", "T1027.013 - Obfuscated Files or Information: Encrypted/Encoded File", "T1137 - Office Application Startup", "T1059.001 - Command and Scripting Interpreter: PowerShell"],
+    "summary": "Tentativa de ataque de Spear Phishing com anexo .docm, remetente falsificado (domain spoofing) e com .exe ofuscado com Base64.",
+    "timeline": [
+      { "time": "09:22", "action": "TRIAGEM - Alerta recebido via SIEM (Splunk) às 09:22." },
+      { "time": "n/a", "action": "TRIAGEM - Identificação do e-mail suspeito com anexo .docm, remetente falsificado." },
+      { "time": "n/a", "action": "TRIAGEM - EDR: WINWORD.exe -> powershell.exe -enc (comando ofuscado)." },
+      { "time": "n/a", "action": "TRIAGEM - Coleta do hash SHA256 do anexo: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855." },
+      { "time": "n/a", "action": "TRIAGEM - Resultado do hash no VirusTotal: suspeita de arquivo vazio/inválido, solicitado o recálculo." },
+      { "time": "n/a", "action": "CONTENÇÃO - Isolamento da máquina do usuário (bloqueio VLAN/Firewall)" },
+      { "time": "n/a", "action": "CONTENÇÃO - Usuário notificado por aplicativo não ligada à rede corporativa às 09:27." },
+      { "time": "n/a", "action": "CONTENÇÃO - Conta do usuário desabilitada via Active Directory." },
+      { "time": "n/a", "action": "CONTENÇÃO - Tokens do Microsoft Office 365 revogados via EntraID PowerShell." },
+      { "time": "n/a", "action": "CONTENÇÃO - Hash do arquivo bloqueado no antivírus corporativo e firewall." },
+      { "time": "n/a", "action": "INVESTIGAÇÃO - Usuário confirmou: fez download mas NÃO habilitou macros (ou não se lembra)." },
+      { "time": "n/a", "action": "INVESTIGAÇÃO - Verificado: usuário NÃO tem privilégios administrativos na máquina." },
+      { "time": "n/a", "action": "INVESTIGAÇÃO - Identificado: 3 tentativas de login SUSPEITAS após o horário do e-mail. (IPs: x.x.x.x)." },
+      { "time": "n/a", "action": "INVESTIGAÇÃO - Verificado: NENHUMA regra de encaminhamento automático." },
+      { "time": "n/a", "action": "INVESTIGAÇÃO - Verificado: NENHUMA regra de exclusão ou pastas suspeitas." },
+      { "time": "n/a", "action": "MITIGAÇÃO - " },
+      { "time": "n/a", "action": "MITIGAÇÃO - " },
+      { "time": "n/a", "action": "MITIGAÇÃO - " },
+      { "time": "n/a", "action": "MITIGAÇÃO - " },
+      { "time": "n/a", "action": "MITIGAÇÃO - " },
+      { "time": "n/a", "action": "MITIGAÇÃO - " },
+      { "time": "n/a", "action": "MITIGAÇÃO - " }
+    ],
+    "iocs": [
+      { "type": "domain", "value": "auth-m365-login-portal.top" },
+      { "type": "malicious-url", "value": "hxxps[://]auth-m365-login-portal[.]top/login.php" },
+      { "type": "sender-mail", "value": "no-reply@microsoft-security-update.com" }
+    ],
+    "findings": "O invasor utilizou engenharia social com gatilho de urgência (prazo curto, 2 horas) e autoridade visual (landing page com layout corporativo da Microsoft). O link redirecionava para domínio recém-registrado configurado com captura de campos POST direta (username e password)." ,
+    "lessons": "Reforçar treinamento de conscientização sobre spoofing de domínio e configurar regra de bloqueio preventivo para domínios recém-registrados. Reforçar a importância da MFA resistente a phishing (FIDO2), reduzindo o impacto de eventuais credenciais submetidas.",
+    "screenshots": [
+      { "file": "suspicious-mail.png", "caption": "Corpo do e-mail malicioso." },
+      { "file": "suspicious-login-page.png", "caption": "Landing page maliciosa" },
+      { "file": "email-header.png", "caption": "Cabeçalho do e-mail analisado pelo Message Header Analyzer." }
+    ]
+  },
+
   {
     "id": "example-pcap-002",
     "case_number": "INC-2026-002",
