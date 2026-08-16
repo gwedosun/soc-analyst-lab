@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfólio SOC — Análises de Incidentes</title>
+<meta name="description" content="Portfólio de laboratórios de SOC e Blue Team: análise de tráfego, phishing e investigação de logs.">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <div class="brand"><span class="dot"></span>SOC<span style="color:var(--text-muted)">.lab</span> <small>ANALYST PORTFOLIO</small></div>
+    <nav class="nav-links">
+      <a href="index.html">fila de casos</a>
+      <a href="https://github.com/" target="_blank" rel="noopener">github</a>
+      <a href="mailto:seuemail@exemplo.com">contato</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="hero">
+    <div class="eyebrow"><span class="cursor"></span>fila de incidentes — laboratório pessoal</div>
+    <h1 class="title">Investigações de blue team, documentadas como incidentes reais.</h1>
+    <p class="subtitle">Cada card abaixo é um caso de laboratório — captura de tráfego, phishing reportado ou análise de logs — tratado com o mesmo rigor de uma investigação de SOC: linha do tempo, IOCs e lições aprendidas.</p>
+
+    <div class="stats-strip" id="stats-strip">
+      <!-- preenchido via JS -->
+    </div>
+  </section>
+
+  <div class="filters" id="filters">
+    <span class="chip active" data-filter-type="category" data-filter-value="all">todos</span>
+    <input class="search-input" id="search" type="text" placeholder="buscar por título, ferramenta ou IOC...">
+  </div>
+
+  <main class="grid" id="grid">
+    <!-- cards preenchidos via JS -->
+  </main>
+</div>
+
+<footer class="wrap">
+  <span>© <span id="year"></span> — construído com HTML/CSS/JS puro, hospedado no GitHub Pages.</span>
+  <span>dados atualizados a partir de <code>data/cases.json</code></span>
+</footer>
+
+<script src="js/app.js"></script>
+</body>
+</html>

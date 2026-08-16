@@ -1,0 +1,94 @@
+[
+  {
+    "id": "phishing-001",
+    "case_number": "INC-2026-001",
+    "title": "Credential Harvesting via notificação falsa do Microsoft 365",
+    "category": "phishing",
+    "severity": "high",
+    "status": "resolved",
+    "date": "2026-03-12",
+    "duration": "1h 10min",
+    "tools": ["Gophish", "urlscan.io", "VirusTotal", "MXToolbox", "CyberChef"],
+    "mitre": ["T1566.002 — Phishing: Spearphishing Link", "T1056.003 — Input Capture: Web Portal Capture"],
+    "summary": "Triagem e análise de e-mail malicioso sobre expiração de senha e link para página falsa de coleta de credenciais.",
+    "timeline": [
+      { "time": "09:12", "action": "Usuário reportou e-mail suspeito alertando sobre expiração iminente da senha corporativa." },
+      { "time": "09:20", "action": "Análise de cabeçalhos RFC 822: identificado remetente no-reply@microsoft-security-update.com com falhas em SPF (softfail), DKIM (none) e DMARC (fail)." },
+      { "time": "09:35", "action": "UInspeção do link em ambiente controlado: URL hxxps[://]auth-m365-login-portal[.]top/login.php identificada como formulário falso da Microsoft com captura ativa de dados." },
+      { "time": "10:05", "action": "Bloqueio do domínio/URL no Gateway de E-mail, Firewall e DNS recursivo." },
+      { "time": "11:50", "action": "Logs de autenticação validados e histórico do usuário checado: confirmado que não houve inserção de credenciais. Incidente encerrado com sucesso." }
+    ],
+    "iocs": [
+      { "type": "domain", "value": "auth-m365-login-portal.top" },
+      { "type": "malicious-url", "value": "hxxps[://]auth-m365-login-portal[.]top/login.php" },
+      { "type": "sender-mail", "value": "no-reply@microsoft-security-update.com" }
+    ],
+    "findings": "O invasor utilizou engenharia social com gatilho de urgência (prazo curto, 2 horas) e autoridade visual (landing page com layout corporativo da Microsoft). O link redirecionava para domínio recém-registrado configurado com captura de campos POST direta (username e password)." ,
+    "lessons": "Reforçar treinamento de conscientização sobre spoofing de domínio e configurar regra de bloqueio preventivo para domínios recém-registrados. Reforçar a importância da MFA resistente a phishing (FIDO2), reduzindo o impacto de eventuais credenciais submetidas.",
+    "screenshots": [
+      { "file": "suspicious-mail.png", "caption": "Corpo do e-mail malicioso." },
+      { "file": "suspicious-login-page.png", "caption": "Landing page maliciosa" },
+      { "file": "email-header.png", "caption": "Cabeçalho do e-mail analisado pelo Message Header Analyzer." }
+    ]
+  },
+  {
+    "id": "example-pcap-002",
+    "case_number": "INC-2026-002",
+    "title": "Exfiltração de dados via DNS tunneling",
+    "category": "network-traffic",
+    "severity": "critical",
+    "status": "resolved",
+    "date": "2026-04-02",
+    "duration": "4h 15min",
+    "tools": ["Wireshark", "tshark", "Zeek", "CyberChef"],
+    "mitre": ["T1048.003 — Exfiltration Over Unencrypted Protocol", "T1071.004 — DNS"],
+    "summary": "Captura de tráfego revelou volume anormal de consultas DNS para subdomínios longos e aleatórios, consistente com exfiltração via túnel DNS.",
+    "timeline": [
+      { "time": "14:00", "action": "Alerta de IDS para volume atípico de consultas DNS do mesmo host." },
+      { "time": "14:10", "action": "Captura de tráfego (.pcap) iniciada e isolada para análise offline." },
+      { "time": "14:45", "action": "Filtro no Wireshark isolando consultas tipo TXT com subdomínios de alta entropia." },
+      { "time": "15:30", "action": "Decodificação em CyberChef confirmou dados codificados em Base32 nos subdomínios." },
+      { "time": "18:15", "action": "Host isolado da rede; regra de bloqueio para o domínio de C2 aplicada no firewall." }
+    ],
+    "iocs": [
+      { "type": "domínio C2", "value": "update-cdn-sync.net" },
+      { "type": "IP interno", "value": "10.20.4.117" },
+      { "type": "padrão de query", "value": "*.update-cdn-sync.net (TXT)" }
+    ],
+    "findings": "O volume de consultas DNS por minuto era 40x acima da média do host, e a entropia dos subdomínios (calculada via script) confirmou codificação de dados, não nomes de domínio legítimos.",
+    "lessons": "Implementar detecção baseada em entropia de subdomínio e limitar consultas DNS diretas, forçando uso de resolver corporativo com logging centralizado.",
+    "screenshots": [
+      { "file": "wireshark-filter.png", "caption": "Filtro isolando consultas DNS TXT anômalas" },
+      { "file": "cyberchef-decode.png", "caption": "Decodificação Base32 revelando dados exfiltrados" }
+    ]
+  },
+  {
+    "id": "example-siem-003",
+    "case_number": "INC-2026-003",
+    "title": "Força bruta contra serviço RDP exposto",
+    "category": "log-analysis",
+    "severity": "medium",
+    "status": "resolved",
+    "date": "2026-05-20",
+    "duration": "1h 30min",
+    "tools": ["Splunk", "Windows Event Viewer", "Sigma rules"],
+    "mitre": ["T1110.001 — Password Guessing", "T1078 — Valid Accounts"],
+    "summary": "Correlação de logs no SIEM identificou milhares de tentativas de autenticação falhas (Event ID 4625) contra um servidor com RDP exposto à internet, seguidas de um login bem-sucedido suspeito.",
+    "timeline": [
+      { "time": "20:00", "action": "Regra de correlação dispara alerta: mais de 500 falhas de logon em 10 minutos, mesmo host de origem." },
+      { "time": "20:05", "action": "Consulta SPL cruzando Event ID 4625 (falha) e 4624 (sucesso) no mesmo IP de origem." },
+      { "time": "20:12", "action": "Identificado logon bem-sucedido após a sequência de falhas — indicativo de credential stuffing." },
+      { "time": "20:20", "action": "Conta bloqueada e IP de origem adicionado à lista de bloqueio no firewall perimetral." },
+      { "time": "21:30", "action": "Confirmado com o usuário legítimo que o acesso não foi realizado por ele; senha redefinida." }
+    ],
+    "iocs": [
+      { "type": "IP de origem", "value": "45.155.204.10" },
+      { "type": "conta afetada", "value": "svc-backup-01" }
+    ],
+    "findings": "O serviço RDP estava exposto diretamente à internet sem VPN ou MFA, e a conta de serviço usava uma senha reutilizada de outro sistema comprometido em vazamento público.",
+    "lessons": "Remover exposição direta de RDP à internet, exigir MFA para contas de serviço com login interativo e habilitar bloqueio de conta após tentativas falhas consecutivas.",
+    "screenshots": [
+      { "file": "splunk-correlation.png", "caption": "Consulta SPL correlacionando falhas e sucesso de logon" }
+    ]
+  }
+]
