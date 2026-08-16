@@ -45,22 +45,22 @@
     "mitre": ["T1566.001 - Spearphishing Attachment", "T1027 - Obfuscated Files or Information", "T1027.013 - Obfuscated Files or Information: Encrypted/Encoded File", "T1137 - Office Application Startup", "T1059.001 - Command and Scripting Interpreter: PowerShell"],
     "summary": "Tentativa de ataque de Spear Phishing com anexo .docm, remetente falsificado (domain spoofing) e com .exe ofuscado com Base64.",
     "timeline": [
-      { "time": "09:22", "action": "TRIAGEM - Alerta recebido via SIEM (Splunk) às 09:22." },
+      { "time": "09:22", "action": "Alerta recebido via SIEM (Splunk) às 09:22." },
       { "time": "n/a", "action": "Identificação do e-mail suspeito com anexo .docm, remetente falsificado." },
       { "time": "n/a", "action": "EDR: WINWORD.exe -> powershell.exe -enc (comando ofuscado)." },
       { "time": "n/a", "action": "Coleta do hash SHA256 do anexo: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855." },
       { "time": "n/a", "action": "Resultado do hash no VirusTotal: suspeita de arquivo vazio/inválido, solicitado o recálculo." },
-      { "time": "n/a", "action": "CONTENÇÃO - Isolamento da máquina do usuário (bloqueio VLAN/Firewall)" },
+      { "time": "n/a", "action": "Isolamento da máquina do usuário (bloqueio VLAN/Firewall)" },
       { "time": "n/a", "action": "Usuário notificado por aplicativo não ligada à rede corporativa às 09:27." },
       { "time": "n/a", "action": "Conta do usuário desabilitada via Active Directory." },
       { "time": "n/a", "action": "Tokens do Microsoft Office 365 revogados via EntraID PowerShell." },
       { "time": "n/a", "action": "Hash do arquivo bloqueado no antivírus corporativo e firewall." },
-      { "time": "n/a", "action": "INVESTIGAÇÃO - Usuário confirmou: fez download mas NÃO habilitou macros (ou não se lembra)." },
+      { "time": "n/a", "action": "Usuário confirmou: fez download mas NÃO habilitou macros (ou não se lembra)." },
       { "time": "n/a", "action": "Verificado: usuário NÃO tem privilégios administrativos na máquina." },
       { "time": "n/a", "action": "Identificado: 3 tentativas de login SUSPEITAS após o horário do e-mail. (IPs: x.x.x.x)." },
       { "time": "n/a", "action": "Verificado: NENHUMA regra de encaminhamento automático." },
       { "time": "n/a", "action": "Verificado: NENHUMA regra de exclusão ou pastas suspeitas." },
-      { "time": "n/a", "action": "MITIGAÇÃO - Senha do usuário RESETADA (forçadamente) no AD/Entra ID" },
+      { "time": "n/a", "action": "Senha do usuário RESETADA (forçadamente) no AD/Entra ID" },
       { "time": "n/a", "action": "Usuário forçado a RE-REGISTRAR MFA (invalidando tokens antigos)" },
       { "time": "n/a", "action": "Máquina adicionada à QUARENTENA (sem acesso à rede interna)" },
       { "time": "n/a", "action": "Logs de rede (firewall/proxy) coletados para análise de C2" },
@@ -72,24 +72,19 @@
       { "time": "n/a", "action": "Notificação ao Compliance (LGPD)."},
       { "time": "n/a", "action": "Verificação de tarefas agendadas, serviços e entradas de registro."},
       { "time": "n/a", "action": "Auditoria de logs de autenticação de outros usuários."},
-      { "time": "n/a", "action": "Monitoramento com HaveIBeenPwned para credenciais do usuário."},
-      { "time": "n/a", "action": "Recomendações pós incidente: treinamento obrigatório sobre phishing com macros; revisão da política de macros na empresa; implementar MFA Anti-Phishing com FID02 para todos os usuários; revisar privilégios de acesso no setor; criar playbook específico para incidentes com macros e PowerShell ofuscado; agendar tabletop exercise com o time de SOC."},
-      { "time": "n/a", "action": ""},
-      { "time": "n/a", "action": ""}
-
-
+      { "time": "n/a", "action": "Monitoramento com HaveIBeenPwned para credenciais do usuário."}
     ],
     "iocs": [
-      { "type": "domain", "value": "auth-m365-login-portal.top" },
-      { "type": "malicious-url", "value": "hxxps[://]auth-m365-login-portal[.]top/login.php" },
-      { "type": "sender-mail", "value": "no-reply@microsoft-security-update.com" }
+      { "type": "sender-mail", "value": "contabilidade@fornecedor-tech-financeiro.com" },
+      { "type": "domain", "value": "fornecedor-tech-financeiro.com" },
+      { "type": "malicious-archive", "value": "NF_84920_Detalhes.docm (SHA256: e3b0c4...b855)" },
+      { "type": "ip", "value": "185.165.29.33" },
+      { "type": "command", "value": "powershell.exe -enc <payload>"}
     ],
-    "findings": "O invasor utilizou engenharia social com gatilho de urgência (prazo curto, 2 horas) e autoridade visual (landing page com layout corporativo da Microsoft). O link redirecionava para domínio recém-registrado configurado com captura de campos POST direta (username e password)." ,
-    "lessons": "Reforçar treinamento de conscientização sobre spoofing de domínio e configurar regra de bloqueio preventivo para domínios recém-registrados. Reforçar a importância da MFA resistente a phishing (FIDO2), reduzindo o impacto de eventuais credenciais submetidas.",
+    "findings": "Às 09:22 o SIEM (Splunk) disparou um alerta de prioridade alta referente a um usuário do Setor Financeiro. O alerta indicava um login no SharePoint partindo de um IP na Rússia (185.165.29.33), seguido de download atípico de 2,3GB de dados da pasta 'RH/Dados_Sigilosos'. Paralelamente, o EDR reportou a execução de um processo filho anormal, indicando a ativação de uma macro maliciosa em um anexo de e-mail." ,
+    "lessons": "Passar treinamento obrigatório sobre phishing com macros. Revisar a política de macros na empresa. Implementar MFA Anti-Phishing com FID02 para todos os usuários. Revisar privilégios de acesso no setor. Criar playbook específico para incidentes com macros e PowerShell ofuscado. Agendar tabletop exercise com o time de SOC.",
     "screenshots": [
-      { "file": "suspicious-mail.png", "caption": "Corpo do e-mail malicioso." },
-      { "file": "suspicious-login-page.png", "caption": "Landing page maliciosa" },
-      { "file": "email-header.png", "caption": "Cabeçalho do e-mail analisado pelo Message Header Analyzer." }
+      { "file": "suspicious-mail.png", "caption": "Corpo do e-mail malicioso." }
     ]
   },
 
